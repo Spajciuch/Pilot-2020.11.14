@@ -11,9 +11,7 @@ public class Platform : MonoBehaviour
     private Vector2 startPosition, lowerPosition, highiestPosition;
 
     void Start()
-    {
-        startPosition = transform.position;
-
+    {     
         if (vertical)
         {
             highiestPosition = new Vector2(transform.position.x, transform.position.y + range);
