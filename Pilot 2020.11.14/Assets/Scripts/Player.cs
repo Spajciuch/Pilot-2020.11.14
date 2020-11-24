@@ -6,6 +6,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private LayerMask platformLayerMask;
     [SerializeField] private LayerMask wallLayerMask;
+    [SerializeField] private LayerMask movingLayerMask;
 
     public float dirX, moveSpeed, jumpSpeed;
     private Animator anim;
@@ -35,7 +36,10 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-            if(!IsTouchingWall()) dirX = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime;
+            if(IsTouchingWall() && !IsTouchingPlatform()) {
+
+            }
+            else dirX = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime;
 
         //if (touchingWall == false)
         //{
@@ -70,8 +74,8 @@ public class Player : MonoBehaviour
         if (Input.GetKey("q")) KillPlayer();
         if (Input.GetKey("e")) RespawnPlayer();
 
-        if (IsTouchingWall()){
-            transform.position = new Vector2(transform.position.x -Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime / 2, transform.position.y);
+        if (IsTouchingWall() && !IsTouchingPlatform()){
+            transform.position = new Vector2(transform.position.x - transform.localScale.x * 0.37f, transform.position.y);
         }
     }
 
@@ -129,11 +133,16 @@ public class Player : MonoBehaviour
     }
     private bool IsGrounded()
     {
-        return boxCollider2D.IsTouchingLayers(platformLayerMask);
+        return boxCollider2D.IsTouchingLayers(platformLayerMask) || boxCollider2D.IsTouchingLayers(movingLayerMask);
     }
     
     private bool IsTouchingWall()
     {
         return polygonCollider2D.IsTouchingLayers(wallLayerMask);
+    }
+
+    private bool IsTouchingPlatform()
+    {
+        return polygonCollider2D.IsTouchingLayers(movingLayerMask);
     }
 }
