@@ -10,8 +10,12 @@ public class Platform : MonoBehaviour
     public float range, speed;
     private Vector2 startPosition, lowerPosition, highiestPosition;
 
+    private GameObject player;
+
     void Start()
-    {     
+    {
+        player = GameObject.Find("Player");
+
         if (vertical)
         {
             highiestPosition = new Vector2(transform.position.x, transform.position.y + range);
@@ -28,9 +32,7 @@ public class Platform : MonoBehaviour
 
     void FixedUpdate()
     {
-        
-
-        if (vertical)
+        if (vertical || horizontal)
         {
             if (Vector3.Distance(transform.position, highiestPosition) < 0.1f)
             {
@@ -46,24 +48,5 @@ public class Platform : MonoBehaviour
             if (goingUp) transform.position = Vector3.MoveTowards(transform.position, highiestPosition, speed * Time.deltaTime);
             if (goingDown) transform.position = Vector3.MoveTowards(transform.position, lowerPosition, speed * Time.deltaTime);
         } 
-
-        if (horizontal)
-        {
-            if (Vector2.Distance(transform.position, highiestPosition) < 0.1f)
-            {
-                goingUp = false;
-                goingDown = true;
-            }
-            else if (Vector2.Distance(transform.position, lowerPosition) < 0.1f)
-            {
-                goingUp = true;
-                goingDown = false;
-            }
-
-            Debug.Log(goingUp + " : " + goingDown);
-
-            if (goingUp) transform.position = Vector3.MoveTowards(transform.position, highiestPosition, speed * Time.deltaTime);
-            if (goingDown) transform.position = Vector3.MoveTowards(transform.position, lowerPosition, speed * Time.deltaTime);
-        }
     }
 }

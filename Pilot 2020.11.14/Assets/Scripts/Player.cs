@@ -5,6 +5,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private LayerMask platformLayerMask;
+    [SerializeField] private LayerMask wallLayerMask;
 
     public float dirX, moveSpeed, jumpSpeed;
     private Animator anim;
@@ -17,10 +18,12 @@ public class Player : MonoBehaviour
     private SoundManage audioPlayer;
 
     public AudioClip footstepSound;
+
+    private bool touchingWall;
+   
     void Start()
     {
         anim = GetComponent<Animator>();
-
         rb2d = GetComponent<Rigidbody2D>();
         
         polygonCollider2D = GetComponent<PolygonCollider2D>();
@@ -32,24 +35,27 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        dirX = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime;
+            if(!IsTouchingWall()) dirX = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime;
 
+        //if (touchingWall == false)
+        //{
         transform.position = new Vector2(transform.position.x + dirX, transform.position.y);
 
-        if (dirX != 0)
-        {
-            Vector3 turnLeft = new Vector3(-1, 1, 1);
-            Vector3 turnRight = new Vector3(1, 1, 1);
+            if (dirX != 0)
+            {
+                Vector3 turnLeft = new Vector3(-1, 1, 1);
+                Vector3 turnRight = new Vector3(1, 1, 1);
 
-            if (dirX < 0) transform.localScale = turnLeft;
-            else transform.localScale = turnRight;
+                if (dirX < 0) transform.localScale = turnLeft;
+                else transform.localScale = turnRight;
 
-            if(IsGrounded()) anim.SetBool("isWalking", true);
-        }
-        else
-        {
-            if(IsGrounded()) anim.SetBool("isWalking", false);
-        }
+                if (IsGrounded()) anim.SetBool("isWalking", true);
+            }
+            else
+            {
+                if (IsGrounded()) anim.SetBool("isWalking", false);
+            }
+        //}
 
         if (Input.GetKey("w") || Input.GetKey(KeyCode.UpArrow))
         {
@@ -62,21 +68,38 @@ public class Player : MonoBehaviour
         }
 
         if (Input.GetKey("q")) KillPlayer();
-        if (Input.GetKey("e")) RespawnPlayer(); 
+        if (Input.GetKey("e")) RespawnPlayer();
+
+        if (IsTouchingWall()){
+            transform.position = new Vector2(transform.position.x -Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime / 2, transform.position.y);
+        }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
+        if(collision.gameObject.tag == "Wall")
+        {
+            touchingWall = true;
+
+            dirX = 0;
+
+            Vector2 newPosition = new Vector2(transform.position.x +5f, transform.position.y - 0.2f);
+
+           /* while(Vector3.Distance(transform.position, newPosition) > 0.1f)
+            {
+                dirX = 0;
+                transform.position = Vector3.MoveTowards(transform.position, newPosition, Time.deltaTime /100);
+            }*/
+        }
+
         if(collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Moving")
         {
-           
             anim.SetBool("inAir", false);
         }
 
         if (collision.gameObject.tag == "Moving")
         {
             transform.parent = collision.transform;
-
         }
     }
 
@@ -85,6 +108,11 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag == "Moving")
         {
             transform.parent = null;
+        }
+
+        if(collision.gameObject.tag == "Wall")
+        {
+            touchingWall = false;
         }
     }
 
@@ -102,5 +130,10 @@ public class Player : MonoBehaviour
     private bool IsGrounded()
     {
         return boxCollider2D.IsTouchingLayers(platformLayerMask);
+    }
+    
+    private bool IsTouchingWall()
+    {
+        return polygonCollider2D.IsTouchingLayers(wallLayerMask);
     }
 }
