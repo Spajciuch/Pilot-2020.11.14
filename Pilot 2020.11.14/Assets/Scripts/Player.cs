@@ -20,8 +20,8 @@ public class Player : MonoBehaviour
 
     public AudioClip footstepSound;
 
-    private bool touchingWall;
-   
+    public int keyNumber = 0;
+    
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -41,8 +41,6 @@ public class Player : MonoBehaviour
             }
             else dirX = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime;
 
-        //if (touchingWall == false)
-        //{
         transform.position = new Vector2(transform.position.x + dirX, transform.position.y);
 
             if (dirX != 0)
@@ -59,7 +57,6 @@ public class Player : MonoBehaviour
             {
                 if (IsGrounded()) anim.SetBool("isWalking", false);
             }
-        //}
 
         if (Input.GetKey("w") || Input.GetKey(KeyCode.UpArrow))
         {
@@ -75,27 +72,23 @@ public class Player : MonoBehaviour
         if (Input.GetKey("e")) RespawnPlayer();
 
         if (IsTouchingWall() && !IsTouchingPlatform()){
-            transform.position = new Vector2(transform.position.x - transform.localScale.x * 0.37f, transform.position.y);
+            Debug.Log(transform.position.x - transform.localScale.x);
+
+            transform.position = new Vector2(transform.position.x - transform.localScale.x, transform.position.y);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Key")
+        {
+            collision.gameObject.SetActive(false);
+            keyNumber ++;
         }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if(collision.gameObject.tag == "Wall")
-        {
-            touchingWall = true;
-
-            dirX = 0;
-
-            Vector2 newPosition = new Vector2(transform.position.x +5f, transform.position.y - 0.2f);
-
-           /* while(Vector3.Distance(transform.position, newPosition) > 0.1f)
-            {
-                dirX = 0;
-                transform.position = Vector3.MoveTowards(transform.position, newPosition, Time.deltaTime /100);
-            }*/
-        }
-
         if(collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Moving")
         {
             anim.SetBool("inAir", false);
@@ -112,11 +105,6 @@ public class Player : MonoBehaviour
         if (collision.gameObject.tag == "Moving")
         {
             transform.parent = null;
-        }
-
-        if(collision.gameObject.tag == "Wall")
-        {
-            touchingWall = false;
         }
     }
 

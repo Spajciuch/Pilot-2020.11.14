@@ -7,6 +7,8 @@ TagManager:
   - Ground
   - Moving
   - Wall
+  - Key
+  - Cage
   layers:
   - Default
   - TransparentFX

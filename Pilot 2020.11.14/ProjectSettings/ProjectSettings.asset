@@ -630,10 +630,10 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 6
-  cloudProjectId: 
+  cloudProjectId: 7389e037-fd78-48d2-85db-297f183b6863
   framebufferDepthMemorylessMode: 0
-  projectName: 
-  organizationId: 
+  projectName: Pilot 2020.11.14
+  organizationId: spajcik
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0
