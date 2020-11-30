@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField] private LayerMask wallLayerMask;
     [SerializeField] private LayerMask movingLayerMask;
 
-    public float dirX, moveSpeed, jumpSpeed;
+    public float dirX, moveSpeed, jumpSpeed, scale;
     private Animator anim;
 
     private Rigidbody2D rb2d;
@@ -36,47 +36,55 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-            if(IsTouchingWall() && !IsTouchingPlatform()) {
+        Movement();
 
-            }
-            else dirX = Input.GetAxisRaw("Horizontal") * moveSpeed * Time.deltaTime;
+        Debug.Log(IsGrounded());
+    }
 
-        transform.position = new Vector2(transform.position.x + dirX, transform.position.y);
+    private void Movement()
+    {
+        float x = Input.GetAxisRaw("Horizontal");
+        float moveBy = x * moveSpeed;
 
-            if (dirX != 0)
-            {
-                Vector3 turnLeft = new Vector3(-1, 1, 1);
-                Vector3 turnRight = new Vector3(1, 1, 1);
-
-                if (dirX < 0) transform.localScale = turnLeft;
-                else transform.localScale = turnRight;
-
-                if (IsGrounded()) anim.SetBool("isWalking", true);
-            }
-            else
-            {
-                if (IsGrounded()) anim.SetBool("isWalking", false);
-            }
-
-        if (Input.GetKey("w") || Input.GetKey(KeyCode.UpArrow))
+        if(x < 0)
         {
-            if (IsGrounded() && !anim.GetBool("inAir"))
+            Vector2 reScale = new Vector2(-1, 1);
+            transform.localScale = reScale;
+        } 
+        
+        else if (x > 0)
+        {
+            Vector2 reScale = new Vector2(1, 1);
+            transform.localScale = reScale;
+        }
+
+        rb2d.velocity = new Vector2(moveBy, rb2d.velocity.y);
+
+        if(Input.GetKey("w") || Input.GetKey(KeyCode.UpArrow))
+        {
+            if(IsGrounded())
             {
-                anim.SetBool("inAir", true);
-                Vector2 jumpVector = new Vector2(0, 1);
-                rb2d.AddForce(jumpVector * jumpSpeed);
+                if (IsGrounded() && !anim.GetBool("inAir"))
+                {
+                    anim.SetBool("inAir", true);
+                    Vector2 jumpVector = new Vector2(0, 1);
+                    rb2d.AddForce(jumpVector * jumpSpeed);
+                }
             }
         }
 
-        if (Input.GetKey("q")) KillPlayer();
-        if (Input.GetKey("e")) RespawnPlayer();
+        if (x != 0)
+        {
+            if (IsGrounded()) anim.SetBool("isWalking", true);
+        }
 
-        if (IsTouchingWall() && !IsTouchingPlatform()){
-            Debug.Log(transform.position.x - transform.localScale.x);
-
-            transform.position = new Vector2(transform.position.x - transform.localScale.x, transform.position.y);
+        else
+        {
+            anim.SetBool("isWalking", false);
         }
     }
+    
+
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -90,7 +98,7 @@ public class Player : MonoBehaviour
     private void OnTriggerStay2D(Collider2D collision)
     {
         if(collision.gameObject.tag == "Ground" || collision.gameObject.tag == "Moving")
-        {
+        { 
             anim.SetBool("inAir", false);
         }
 
@@ -110,7 +118,7 @@ public class Player : MonoBehaviour
 
     public void KillPlayer()
     {
-        //player.SetActive(false);
+        anim.SetBool("Dead", true);
         audioPlayer.DeathSound();
     }
 
@@ -122,15 +130,5 @@ public class Player : MonoBehaviour
     private bool IsGrounded()
     {
         return boxCollider2D.IsTouchingLayers(platformLayerMask) || boxCollider2D.IsTouchingLayers(movingLayerMask);
-    }
-    
-    private bool IsTouchingWall()
-    {
-        return polygonCollider2D.IsTouchingLayers(wallLayerMask);
-    }
-
-    private bool IsTouchingPlatform()
-    {
-        return polygonCollider2D.IsTouchingLayers(movingLayerMask);
     }
 }
