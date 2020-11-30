@@ -17,9 +17,11 @@ public class Player : MonoBehaviour
 
     private GameObject player;
     private SoundManage audioPlayer;
+    private GameActions game;
+    private CameraScript cameraScript;
 
     public AudioClip footstepSound;
-
+    
     public int keyNumber = 0;
     
     void Start()
@@ -30,15 +32,25 @@ public class Player : MonoBehaviour
         polygonCollider2D = GetComponent<PolygonCollider2D>();
         boxCollider2D = GetComponent<BoxCollider2D>();
 
+        cameraScript = FindObjectOfType<CameraScript>();
+
         player = GameObject.Find("Player");
         audioPlayer = FindObjectOfType<SoundManage>();
+        game = player.AddComponent<GameActions>();
+    }
+
+    private void Update()
+    {
+        if (Input.GetKey("q")) KillPlayer();
+        if (Input.GetKey("e")) RespawnPlayer();
     }
 
     void FixedUpdate()
     {
         Movement();
 
-        Debug.Log(IsGrounded());
+        if (Input.GetKey("q")) KillPlayer();
+        if (Input.GetKey("e")) RespawnPlayer();
     }
 
     private void Movement()
@@ -120,12 +132,19 @@ public class Player : MonoBehaviour
     {
         anim.SetBool("Dead", true);
         audioPlayer.DeathSound();
+
+        cameraScript.cameraDistance = Mathf.SmoothStep(50, 20, 10);
+
+        game.PauseGame();
     }
 
     public void RespawnPlayer()
     {
-        player.transform.position = new Vector2(-8.81f, -2.2f);
-        player.SetActive(true);
+        game.ResumeGame();
+        
+        anim.SetBool("Dead", false);
+        cameraScript.cameraDistance = 50;
+        player.transform.position = new Vector2(-45.8f, 5.6f);
     }
     private bool IsGrounded()
     {
