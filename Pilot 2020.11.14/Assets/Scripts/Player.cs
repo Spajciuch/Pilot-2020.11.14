@@ -41,16 +41,13 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey("q")) KillPlayer();
-        if (Input.GetKey("e")) RespawnPlayer();
+        if (Input.GetKey("q")) game.Kill(player, true, true, false);
+        if (Input.GetKey("e")) game.Respawn(player, new Vector2(-45.8f, 5.6f), true, true, false);
     }
 
     void FixedUpdate()
     {
         Movement();
-
-        if (Input.GetKey("q")) KillPlayer();
-        if (Input.GetKey("e")) RespawnPlayer();
     }
 
     private void Movement()
@@ -128,24 +125,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void KillPlayer()
-    {
-        anim.SetBool("Dead", true);
-        audioPlayer.DeathSound();
-
-        cameraScript.cameraDistance = Mathf.SmoothStep(50, 20, 10);
-
-        game.PauseGame();
-    }
-
-    public void RespawnPlayer()
-    {
-        game.ResumeGame();
-        
-        anim.SetBool("Dead", false);
-        cameraScript.cameraDistance = 50;
-        player.transform.position = new Vector2(-45.8f, 5.6f);
-    }
     private bool IsGrounded()
     {
         return boxCollider2D.IsTouchingLayers(platformLayerMask) || boxCollider2D.IsTouchingLayers(movingLayerMask);

@@ -13,7 +13,7 @@ public class CameraScript : MonoBehaviour
     }
 
     
-    void FixedUpdate()
+    void Update()
     {
         transform.position = new Vector3(player.transform.position.x, player.transform.position.y + 2, -cameraDistance);
     }
