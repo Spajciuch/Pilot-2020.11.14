@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
     public AudioClip footstepSound;
     
     public int keyNumber = 0;
-    
+
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -42,7 +42,7 @@ public class Player : MonoBehaviour
     private void Update()
     {
         if (Input.GetKey("q")) game.Kill(player, true, true, false);
-        if (Input.GetKey("e")) game.Respawn(player, new Vector2(-45.8f, 5.6f), true, true, false);
+        if (Input.GetKey("e")) game.Respawn(player, new Vector2(-204.3f, 15.84f), true, true, false);
     }
 
     void FixedUpdate()

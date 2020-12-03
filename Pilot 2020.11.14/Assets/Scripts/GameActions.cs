@@ -1,17 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameActions : MonoBehaviour
 {
     
-    public void PauseGame()
+    public void PauseGame(bool UI = false)
     {
+        if (Time.timeScale == 0) return;
+
         Time.timeScale = 0;
+
+        if (UI)
+        {
+            SceneManager.LoadScene("PauseScreen", LoadSceneMode.Additive);
+        }
     } 
 
     public void ResumeGame()
     {
+        SceneManager.UnloadSceneAsync("PauseScreen");
         Time.timeScale = 1;
     }
 
@@ -39,5 +48,24 @@ public class GameActions : MonoBehaviour
         if (create) respawnObject.SetActive(true);
 
         respawnObject.transform.position = position;
+    }
+    bool goingUp = true;
+    bool goingDown = false;
+
+    public void Float(GameObject target, Vector2 highiestPosition, Vector2 lowerPosition, float speed)
+    {
+        if (Vector3.Distance(target.transform.position, highiestPosition) < 0.1f)
+        {
+            goingUp = false;
+            goingDown = true;
+        }
+        else if (Vector3.Distance(target.transform.position, lowerPosition) < 0.1f)
+        {
+            goingUp = true;
+            goingDown = false;
+        }
+
+        if (goingUp) target.transform.position = Vector3.MoveTowards(transform.position, highiestPosition, speed * Time.deltaTime);
+        if (goingDown) target.transform.position = Vector3.MoveTowards(transform.position, lowerPosition, speed * Time.deltaTime);
     }
 }
