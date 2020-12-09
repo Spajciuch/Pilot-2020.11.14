@@ -29,11 +29,13 @@ public class GameActions : MonoBehaviour
         Animator anim = killObject.GetComponent<Animator>();
         CameraScript cameraScript = FindObjectOfType<CameraScript>();
 
-        if (zoom) cameraScript.cameraDistance = 20;
+        if (zoom)
+        {
+            cameraScript.cameraDistance = 20;
+            PauseGame();
+        }
         if (animation) anim.SetBool("Dead", true);
         if (destroy) killObject.SetActive(false);
-
-        PauseGame();
     }
 
     public void Respawn(GameObject respawnObject, Vector2 position, bool zoom, bool animation, bool create)
